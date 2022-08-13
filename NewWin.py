@@ -36,10 +36,13 @@ app = pg.mkQApp("Plot Speed Test")
 
 class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
     def __init__(self):
-        super(WinLogic, self).__init__()
+        super(NewWin, self).__init__()
         self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(update)
+        self.timer.timeout.connect(self.update)
         self.timer.start(0)
+
+        self.chile()
+        self.create()
     def update(self):
         pass
 
@@ -63,8 +66,8 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
         self.restoreBtn.setEnabled(False)
         self.w1.addWidget(self.label, row=0, col=0)
 
-        self.w1.addWidget(saveBtn, row=1, col=0)
-        self.w1.addWidget(restoreBtn, row=2, col=0)
+        self.w1.addWidget(self.saveBtn, row=1, col=0)
+        self.w1.addWidget(self.restoreBtn, row=2, col=0)
         self.docker_Terminal.addWidget(self.w1)
 
         self.w5 = pg.ImageView()
@@ -81,13 +84,13 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
         self.pt = ptree.ParameterTree(showHeader=False)
         self.pt.setMaximumSize(QtCore.QSize(500, 16777215))
         self.area.setMaximumSize(QtCore.QSize(500, 16777215))
-        self.pt.setParameters(params)
+        self.pt.setParameters(self.params)
         self.pw = pg.PlotWidget()
 
         self.horizontalLayout_3.addWidget(self.pt)
         self.horizontalLayout_3.addWidget(self.area)
-        self.cy.addLayout(horizontalLayout_3)
-        self.cy.addWidget(pw)
+        self.cy.addLayout(self.horizontalLayout_3)
+        self.cy.addWidget(self.pw)
 
         self.cy.setStretch(0, 0)
         self.cy.setStretch(1, 2)
@@ -123,7 +126,7 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
                 dict(name='Path', type='str', value="temp.csv"),
             ])
         ]
-        return children
+
     def CONNECT(self):
         pass
 
@@ -214,31 +217,33 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
 
 # makeData()
 
-fpsLastUpdate = perf_counter()
-def update():
-    global curve, data, ptr, elapsed, fpsLastUpdate
-
-    options = ['antialias', 'connect', 'skipFiniteCheck']
-    kwds = { k : params[k] for k in options }
-    if kwds['connect'] == 'array':
-        kwds['connect'] = connect_array
-
-    # Measure
-    t_start = perf_counter()
-    curve.setData(data[ptr], **kwds)
-    app.processEvents(QtCore.QEventLoop.ProcessEventsFlag.AllEvents)
-    t_end = perf_counter()
-    elapsed.append(t_end - t_start)
-    ptr = (ptr + 1) % data.shape[0]
-
-    # update fps at most once every 0.2 secs
-    if t_end - fpsLastUpdate > 0.2:
-        fpsLastUpdate = t_end
-        average = np.mean(elapsed)
-        fps = 1 / average
-        pw.setTitle('%0.2f fps - %0.1f ms avg' % (fps, average * 1_000))
+# fpsLastUpdate = perf_counter()
+# def update():
+#     global curve, data, ptr, elapsed, fpsLastUpdate
+#
+#     options = ['antialias', 'connect', 'skipFiniteCheck']
+#     kwds = { k : params[k] for k in options }
+#     if kwds['connect'] == 'array':
+#         kwds['connect'] = connect_array
+#
+#     # Measure
+#     t_start = perf_counter()
+#     curve.setData(data[ptr], **kwds)
+#     app.processEvents(QtCore.QEventLoop.ProcessEventsFlag.AllEvents)
+#     t_end = perf_counter()
+#     elapsed.append(t_end - t_start)
+#     ptr = (ptr + 1) % data.shape[0]
+#
+#     # update fps at most once every 0.2 secs
+#     if t_end - fpsLastUpdate > 0.2:
+#         fpsLastUpdate = t_end
+#         average = np.mean(elapsed)
+#         fps = 1 / average
+#         pw.setTitle('%0.2f fps - %0.1f ms avg' % (fps, average * 1_000))
 
 
 
 if __name__ == '__main__':
+    win = NewWin()
+    win.run()
     pg.exec()

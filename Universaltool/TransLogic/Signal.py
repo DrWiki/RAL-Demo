@@ -8,6 +8,7 @@ class Signals():
     signal_NewDataComing = QtCore.pyqtSignal(str)
     signal_PackedDataComing = QtCore.pyqtSignal(bytes)
     signal_trigerthread = QtCore.pyqtSignal(int)
+
     def __init__(self):
         self.connect()
 
