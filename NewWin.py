@@ -46,6 +46,27 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
     def update(self):
         pass
 
+
+    def create_Core(self):
+
+        pass
+
+    def create_Core2(self):
+        vb = pg.ViewBox()
+        img = pg.ImageItem()
+        vb.addItem(img)
+        pass
+
+    def create_Main(self):
+        pw = pg.PlotWidget()
+        pw.setWindowTitle('pyqtgraph example: PlotSpeedTest')
+        pw.setLabel('bottom', 'Index', units='B')
+        curve = MonkeyCurveItem(pen=default_pen, brush='b')
+        pw.addItem(curve)
+        self.create()
+
+
+
     def create(self):
         self.docker_Terminal = Dock("Terminal", size=(1, 1))
         self.docker_Receive = Dock("Recieve", size=(500, 300), closable=True)
@@ -85,17 +106,44 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
         self.pt.setMaximumSize(QtCore.QSize(500, 16777215))
         self.area.setMaximumSize(QtCore.QSize(500, 16777215))
         self.pt.setParameters(self.params)
+        self.MainDockArea = DockArea()
         self.pw = pg.PlotWidget()
 
+        self.Title_img = pg.ImageItem()
+        self.area_til = DockArea()
+
+        self.vb = pg.ViewBox()
+        self.vbGV = pg.widgets.GraphicsView.GraphicsView()
+        self.vbGV.setMaximumSize(QtCore.QSize(500, 100))
+        self.vbGV.setCentralItem(self.vb)
+        self.horizontalLayout_3.addWidget(self.vbGV)
+        self.vb.addItem(self.Title_img)
+        self.area_til_d1 = Dock("Dock1", size=(1, 1))
+
+        # self.area_til_d1.addWidget(self.vbGV)
+        # self.area_til.addDock(self.area_til_d1)
+        # vb.addItem(img)
+
+        self.horizontalLayout_3.addWidget(self.area_til)
         self.horizontalLayout_3.addWidget(self.pt)
         self.horizontalLayout_3.addWidget(self.area)
         self.cy.addLayout(self.horizontalLayout_3)
-        self.cy.addWidget(self.pw)
+        self.Main_d1 = Dock("Dock1", size=(1, 1))
+        self.Main_d2 = Dock("Dock2", size=(1, 1))
+        self.Main_d3 = Dock("Dock3", size=(1, 1))
+        self.Main_d1.addWidget(self.pw)
+        # self.Main_d2.addWidget(self.pw)
+        self.MainDockArea.addDock(self.Main_d1)
+        self.MainDockArea.addDock(self.Main_d2)
+        self.MainDockArea.addDock(self.Main_d3)
+
+        self.cy.addWidget(self.MainDockArea)
 
         self.cy.setStretch(0, 0)
         self.cy.setStretch(1, 2)
         self.horizontalLayout_3.setStretch(0, 0)
-        self.horizontalLayout_3.setStretch(1, 2)
+        self.horizontalLayout_3.setStretch(1, 0)
+        self.horizontalLayout_3.setStretch(2, 1)
         # win2.setLayout(horizontalLayout_3)
         # splitter.addWidget(win2)
         # splitter.show()
@@ -104,6 +152,10 @@ class NewWin(QtWidgets.QWidget,UDP.UdpLogic, TCP.TcpLogic, SER.PyQt_Serial):
 
     def chile(self):
         self.children = [
+            dict(name='Camera', title='Camera', type='group', children=[
+                dict(name='index', type='int', value=0),
+                # Parameter.create(name=f'Open', type='action'),
+            ]),
             dict(name='TCP', title='TCP', type='group', children=[
                 dict(name='Server', type='bool', value=True),
                 dict(name='Server IP', type='str', value="0.0.0.0"),

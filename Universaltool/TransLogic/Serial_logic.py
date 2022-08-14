@@ -7,8 +7,7 @@ import Signal
 
 
 class PyQt_Serial(Signal.Signals):
-    signal_write_msg = QtCore.pyqtSignal(str)
-
+    # signal_write_msg = QtCore.pyqtSignal(str)
     def __init__(self):
         super().__init__()
         self.ser_com = QSerialPort()

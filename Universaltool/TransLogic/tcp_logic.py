@@ -17,8 +17,6 @@ class TcpLogic(Signal.Signals):
         self.tcp_port1 = 8080
         self.tcp_link = False  # 用于标记是否开启了连接
 
-
-
     def tcp_server_start(self):
         self.tcp_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # 取消主动断开连接四次握手后的TIME_WAIT状态
